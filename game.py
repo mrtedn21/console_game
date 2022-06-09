@@ -1,6 +1,13 @@
+import curses
 import time
 
 from screen import Screen
+
+ESCAPE_KEY = 27
+UP_KEY = 259
+DOWN_KEY = 258
+LEFT_KEY = 260
+RIGHT_KEY = 261
 
 
 class Game:
@@ -9,16 +16,22 @@ class Game:
 
     def play(self):
         with Screen() as screen:
-            x = 1
-            y = 1
+            x = 0
+            y = 0
             key = screen.getch()
-            while key != 27:
+            while key != ESCAPE_KEY:
+                screen.addch(y, x, 'X')
+                screen.refresh()
                 time.sleep(1 / 60)
                 key = screen.getch()
-                if key == 259:
+                if key < 0:
+                    continue
+
+                if key == UP_KEY:
                     y -= 1
-                    x += 1
-                if key == 258:
+                if key == DOWN_KEY:
                     y += 1
+                if key == RIGHT_KEY:
                     x += 1
-                screen.addstr(y, x, 'x')
+                if key == LEFT_KEY:
+                    x -= 1
