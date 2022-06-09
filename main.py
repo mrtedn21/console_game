@@ -1,6 +1,5 @@
 import curses
 import time
-from datetime import datetime
 
 
 class Screen:
@@ -18,27 +17,22 @@ class Screen:
         curses.echo()
         curses.endwin()
 
+
 def main():
     with Screen() as screen:
-        res = []
-        initial_time = datetime.now()
         x = 1
         y = 1
-
         key = screen.getch()
         while key != 27:
+            time.sleep(1 / 60)
             key = screen.getch()
-            if key > 0:
-                res.append(key)
             if key == 259:
-                x += 1
                 y -= 1
-            if key == 258:
                 x += 1
+            if key == 258:
                 y += 1
+                x += 1
             screen.addstr(y, x, 'x')
-
-        print(res)
 
 
 if __name__ == '__main__':
