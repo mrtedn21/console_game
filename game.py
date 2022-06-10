@@ -10,6 +10,7 @@ DOWN_KEY = 258
 LEFT_KEY = 260
 RIGHT_KEY = 261
 
+
 class Game:
     def __init__(self):
         self.screen = get_screen()
@@ -18,6 +19,10 @@ class Game:
         self.top = curses.LINES - 2
         self.left = 1
         self.right = curses.COLS - 1
+
+        self.person_x = self.left + 1
+        self.person_y = self.bottom + 1
+
 
     def __enter__(self):
         return self
@@ -41,13 +46,27 @@ class Game:
 
         self.screen.refresh()
 
+    def _move_person_right(self):
+        if self.person_x < self.right - 1:
+            self.person_x += 1
+
+    def _move_person_left(self):
+        if self.person_x > self.left + 1:
+            self.person_x -= 1
+
+    def _move_person_down(self):
+        if self.person_y < self.top - 1:
+            self.person_y += 1
+
+    def _move_person_up(self):
+        if self.person_y > self.bottom + 1:
+            self.person_y -= 1
+
     def play(self):
         self._draw_field_borders()
-        x = self.left + 1
-        y = self.bottom + 1
         key = self.screen.getch()
         while key != ESCAPE_KEY:
-            self.screen.addch(y, x, 'X')
+            self.screen.addch(self.person_y, self.person_x, 'X')
             self.screen.refresh()
             time.sleep(1 / 60)
             key = self.screen.getch()
@@ -55,13 +74,13 @@ class Game:
                 continue
 
             if key == UP_KEY:
-                y -= 1
+                self._move_person_up()
             if key == DOWN_KEY:
-                y += 1
+                self._move_person_down()
             if key == RIGHT_KEY:
-                x += 1
+                self._move_person_right()
             if key == LEFT_KEY:
-                x -= 1
+                self._move_person_left()
 
     def __exit__(self, *exceptions):
         close_screen(self.screen)
