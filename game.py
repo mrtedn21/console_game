@@ -47,11 +47,21 @@ class Game:
         self.screen.refresh()
 
     def _move_person_right(self):
-        if self.person_x < self.right - 1:
+        if self.person_x < self.right - 2:
+            self.person_x += 1
+            self._display_person()
+            self.person_x += 1
+
+        elif self.right - self.person_x in (2, 3):
             self.person_x += 1
 
     def _move_person_left(self):
-        if self.person_x > self.left + 1:
+        if self.person_x > self.left + 2:
+            self.person_x -= 1
+            self._display_person()
+            self.person_x -= 1
+        
+        elif self.person_x - self.left in (2,3):
             self.person_x -= 1
 
     def _move_person_down(self):
@@ -61,13 +71,16 @@ class Game:
     def _move_person_up(self):
         if self.person_y > self.bottom + 1:
             self.person_y -= 1
+    
+    def _display_person(self):
+        self.screen.addch(self.person_y, self.person_x, 'X')
+        self.screen.refresh()
 
     def play(self):
         self._draw_field_borders()
         key = self.screen.getch()
         while key != ESCAPE_KEY:
-            self.screen.addch(self.person_y, self.person_x, 'X')
-            self.screen.refresh()
+            self._display_person()
             time.sleep(1 / 60)
             key = self.screen.getch()
             if key < 0:
