@@ -1,4 +1,6 @@
 from game import Game
 
 if __name__ == '__main__':
-    Game().play()
+    with Game() as game:
+        game.play()
+
