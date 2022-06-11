@@ -1,6 +1,10 @@
 from game import Game
+from screen import ScreenAccess
 
 if __name__ == '__main__':
-    with Game() as game:
+    ScreenAccess()
+    game = Game()
+    try:
         game.play()
-
+    finally:
+        ScreenAccess.destroy()
