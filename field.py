@@ -49,45 +49,53 @@ class Field:
             new_x = self.left + 1
 
             self.matrix[new_y][new_x] = Cell.TRACK
-            self.draw(new_y, new_x, Person.HERO_CHAR)
             return new_y, new_x
 
-    def draw(self, *args, **kwargs):
+    def _draw(self, *args, **kwargs):
         self.screen.addch(*args, **kwargs)
+
+    def _is_on_border(self, y, x):
+        return y in (self.top - 1, self.bottom + 1) \
+            or x in (self.right - 1, self.left + 1)
 
     def draw_person(self, person):
         if person.kind == Person.HERO:
             self.matrix[person.y][person.x] = Cell.TRACK
-            self.draw(person.y, person.x, Person.HERO_CHAR)
+
+            self._draw(person.y, person.x, Person.HERO_CHAR)
+
+            if self._is_on_border(person.y, person.x) \
+                    and self._is_on_border(person.py, person.px):
+                self._draw(person.py, person.px, ' ')
 
     def move_right(self, person):
         if person.x < self.right - 2:
-            person.x += 1
+            person.right()
             self.draw_person(person)
-            person.x += 1
+            person.right()
         elif person.x < self.right - 1:
-            person.x += 1
+            person.right()
 
         self.draw_person(person)
 
     def move_left(self, person):
         if person.x > self.left + 2:
-            person.x -= 1
+            person.left()
             self.draw_person(person)
-            person.x -= 1
+            person.left()
         elif person.x > self.left + 1:
-            person.x -= 1
+            person.left()
 
         self.draw_person(person)
 
     def move_down(self, person):
         if person.y < self.top - 1:
-            person.y += 1
+            person.down()
             self.draw_person(person)
 
     def move_up(self, person):
         if person.y > self.bottom + 1:
-            person.y -= 1
+            person.up()
             self.draw_person(person)
 
     def draw_borders(self):
@@ -95,14 +103,14 @@ class Field:
         horizontal_line = '─'
 
         for current in range(self.left, self.right):
-            self.draw(self.bottom, current, horizontal_line)
-            self.draw(self.top, current, horizontal_line)
+            self._draw(self.bottom, current, horizontal_line)
+            self._draw(self.top, current, horizontal_line)
 
         for current in range(self.bottom, self.top):
-            self.draw(current, self.left, vertical_line)
-            self.draw(current, self.right, vertical_line)
+            self._draw(current, self.left, vertical_line)
+            self._draw(current, self.right, vertical_line)
 
-        self.draw(self.top, self.left, '└')
-        self.draw(self.top, self.right, '┘')
-        self.draw(self.bottom, self.left, '┌')
-        self.draw(self.bottom, self.right, '┐')
+        self._draw(self.top, self.left, '└')
+        self._draw(self.top, self.right, '┘')
+        self._draw(self.bottom, self.left, '┌')
+        self._draw(self.bottom, self.right, '┐')
