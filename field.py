@@ -34,12 +34,21 @@ class Field:
         self.right = max_width - 1
 
         self.screen = ScreenAccess()
+        self.matrix = []
+        self._fill_matrix()
+
+    def _fill_matrix(self):
+        for i in range(self.top):
+            self.matrix.append([])
+            for j in range(self.right):
+                self.matrix[i].append(Cell.EMPTY)
 
     def get_start_position(self, kind):
         if kind == Person.HERO:
             new_y = self.bottom + 1
             new_x = self.left + 1
 
+            self.matrix[new_y][new_x] = Cell.TRACK
             self.draw(new_y, new_x, Person.HERO_CHAR)
             return new_y, new_x
 
@@ -47,7 +56,9 @@ class Field:
         self.screen.addch(*args, **kwargs)
 
     def draw_person(self, person):
-        self.draw(person.y, person.x, 'X')
+        if person.kind == Person.HERO:
+            self.matrix[person.y][person.x] = Cell.TRACK
+            self.draw(person.y, person.x, Person.HERO_CHAR)
 
     def move_right(self, person):
         if person.x < self.right - 2:
