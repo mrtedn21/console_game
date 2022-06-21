@@ -1,4 +1,4 @@
-import curses
+import sys
 import time
 
 from field import Field
@@ -14,9 +14,11 @@ RIGHT_KEY = 261
 
 class Game:
     def __init__(self):
+        max_y, max_x = ScreenAccess().getmaxyx()
+        sys.setrecursionlimit((max_x + 2) * (max_y + 2))
         self.field = Field(
-            max_width=curses.COLS,
-            max_height=curses.LINES,
+            max_width=max_x,
+            max_height=max_y,
         )
         self.hero = Person(
             *self.field.get_start_position(Person.HERO),
