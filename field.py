@@ -41,9 +41,9 @@ class Field:
         for i in range(self.top + 1):
             self.matrix.append([])
             for j in range(self.right + 1):
-                if i in (self.bottom, self.top):
+                if i in (self.bottom, self.top, 0):
                     self.matrix[i].append(Cell.BORDER)
-                elif j in (self.right, self.left):
+                elif j in (self.right, self.left, 0):
                     self.matrix[i].append(Cell.BORDER)
                 else:
                     self.matrix[i].append(Cell.EMPTY)
@@ -75,7 +75,9 @@ class Field:
                     self._draw(person.py, person.px, ' ')
 
                 if not self._is_on_border(person.py, person.px):
-                    self.fill_little_empty_space()
+                    self.fill_one_figure()
+                    self.select_little_figure()
+                    self.draw_little_figure()
 
     def move_right(self, person):
         if person.x < self.right - 2:
@@ -109,30 +111,55 @@ class Field:
             person.up()
             self._move(person)
 
-    def fill_little_empty_space(self, y=None, x=None):
+    def select_little_figure(self):
+        empty_count = 0
+        considered_count = 0
+        for i in self.matrix:
+            for j in i:
+                if j == Cell.EMPTY:
+                    empty_count += 1
+                if j == Cell.CONSIDER:
+                    considered_count += 1
+
+        for y in range(self.top):
+            for x in range(self.right):
+                if empty_count < considered_count:
+                    if self.matrix[y][x] == Cell.EMPTY:
+                        self.matrix[y][x] = Cell.MARKED
+                    if self.matrix[y][x] == Cell.CONSIDER:
+                        self.matrix[y][x] = Cell.EMPTY
+                else:
+                    if self.matrix[y][x] == Cell.CONSIDER:
+                        self.matrix[y][x] = Cell.MARKED
+                if self.matrix[y][x] == Cell.TRACK:
+                    self.matrix[y][x] = Cell.MARKED
+
+    def draw_little_figure(self):
+        for y in range(self.top):
+            for x in range(self.right):
+                if self.matrix[y][x] == Cell.MARKED:
+                    self._draw(y, x, Person.HERO_CHAR)
+
+    def fill_one_figure(self, y=None, x=None):
         if y is None or x is None:
             y, x = self._get_random_empty_coordinates()
 
         try:
             if self.matrix[y + 1][x] == Cell.EMPTY:
                 self.matrix[y + 1][x] = Cell.CONSIDER
-                self._draw(y + 1, x, Cell.CONSIDER.value)
-                self.fill_little_empty_space(y + 1, x)
+                self.fill_one_figure(y + 1, x)
 
             if self.matrix[y][x + 1] == Cell.EMPTY:
                 self.matrix[y][x + 1] = Cell.CONSIDER
-                self._draw(y, x + 1, Cell.CONSIDER.value)
-                self.fill_little_empty_space(y, x + 1)
+                self.fill_one_figure(y, x + 1)
 
             if self.matrix[y - 1][x] == Cell.EMPTY:
                 self.matrix[y - 1][x] = Cell.CONSIDER
-                self._draw(y - 1, x, Cell.CONSIDER.value)
-                self.fill_little_empty_space(y - 1, x)
+                self.fill_one_figure(y - 1, x)
 
             if self.matrix[y][x - 1] == Cell.EMPTY:
                 self.matrix[y][x - 1] = Cell.CONSIDER
-                self._draw(y, x - 1, Cell.CONSIDER.value)
-                self.fill_little_empty_space(y, x - 1)
+                self.fill_one_figure(y, x - 1)
         except IndexError:
             pass
 

@@ -15,7 +15,7 @@ RIGHT_KEY = 261
 class Game:
     def __init__(self):
         max_y, max_x = ScreenAccess().getmaxyx()
-        sys.setrecursionlimit((max_x + 2) * (max_y + 2))
+        sys.setrecursionlimit(max_x * max_y)
         self.field = Field(
             max_width=max_x,
             max_height=max_y,
