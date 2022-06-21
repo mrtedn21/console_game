@@ -6,5 +6,8 @@ if __name__ == '__main__':
     game = Game()
     try:
         game.play()
+    except KeyboardInterrupt:
+        pass
     finally:
         ScreenAccess.destroy()
+        print('Exit from game')
