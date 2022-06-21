@@ -78,6 +78,7 @@ class Field:
                     self.fill_one_figure()
                     self.select_little_figure()
                     self.draw_little_figure()
+                    self._draw(person.y, person.x, Person.HERO_CHAR)
 
     def move_right(self, person):
         if person.x < self.right - 2:
