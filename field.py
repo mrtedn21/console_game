@@ -58,8 +58,6 @@ class Field:
 
     def _draw(self, *args, **kwargs):
         self.screen.addch(*args, **kwargs)
-        # TODO needs to remove refresh in _draw
-        self.screen.refresh()
 
     def _is_on_border(self, y, x):
         return y in (self.top - 1, self.bottom + 1) \
@@ -69,12 +67,14 @@ class Field:
         if person.kind == Person.HERO:
             self.matrix[person.y][person.x] = Cell.TRACK
             self._draw(person.y, person.x, Person.HERO_CHAR)
+            self.screen.refresh()
 
             if self._is_on_border(person.y, person.x):
                 if self._is_on_border(person.py, person.px):
                     self._draw(person.py, person.px, ' ')
 
                 if not self._is_on_border(person.py, person.px):
+
                     self.fill_one_figure()
                     self.select_little_figure()
                     self.draw_little_figure()
@@ -140,6 +140,8 @@ class Field:
             for x in range(self.right):
                 if self.matrix[y][x] == Cell.MARKED:
                     self._draw(y, x, Person.HERO_CHAR)
+
+        self.screen.refresh()
 
     def fill_one_figure(self, y=None, x=None):
         if y is None or x is None:
