@@ -59,56 +59,74 @@ class Field:
     def _draw(self, *args, **kwargs):
         self.screen.addch(*args, **kwargs)
 
-    def _is_on_border(self, y, x):
-        return y in (self.top - 1, self.bottom + 1) \
-            or x in (self.right - 1, self.left + 1)
+    def _is_border(self, y, x):
+        return self.matrix[y][x] in (Cell.BORDER, Cell.MARKED)
+
+    def _is_on_border(self, person):
+        return (
+            abs(person.y - person.py) == 1
+            and (
+                self._is_border(person.y, person.x - 1) or
+                self._is_border(person.y, person.x + 1)
+            )
+            or
+            abs(person.x - person.px) == 1
+            and (
+                self._is_border(person.y - 1, person.x) or
+                self._is_border(person.y + 1, person.x)
+            )
+        )
+
+    def _is_border_reach(self, person):
+        return (
+            person.x - person.px == 1 and self._is_border(person.y, person.x + 1)
+            or
+            person.px - person.x == 1 and self._is_border(person.y, person.x - 1)
+            or
+            person.y - person.py == 1 and self._is_border(person.y + 1, person.x)
+            or
+            person.py - person.y == 1 and self._is_border(person.y - 1, person.x)
+        )
 
     def _move(self, person):
         if person.kind == Person.HERO:
             self.matrix[person.y][person.x] = Cell.TRACK
             self._draw(person.y, person.x, Person.HERO_CHAR)
+
+            if self._is_on_border(person):
+                self._draw(person.py, person.px, ' ')
+
+            if self._is_border_reach(person):
+                self.fill_one_figure()
+                self.select_little_figure()
+                self.draw_little_figure()
+                self._draw(person.y, person.x, Person.HERO_CHAR)
+
             self.screen.refresh()
 
-            if self._is_on_border(person.y, person.x):
-                if self._is_on_border(person.py, person.px):
-                    self._draw(person.py, person.px, ' ')
-
-                if not self._is_on_border(person.py, person.px):
-
-                    self.fill_one_figure()
-                    self.select_little_figure()
-                    self.draw_little_figure()
-                    self._draw(person.y, person.x, Person.HERO_CHAR)
-
     def move_right(self, person):
-        if person.x < self.right - 2:
+        if self.matrix[person.y][person.x + 1] == Cell.EMPTY:
             person.right()
             self._move(person)
+        if self.matrix[person.y][person.x + 1] == Cell.EMPTY:
             person.right()
-
-        elif person.x < self.right - 1:
-            person.right()
-
-        self._move(person)
+            self._move(person)
 
     def move_left(self, person):
-        if person.x > self.left + 2:
+        if self.matrix[person.y][person.x - 1] == Cell.EMPTY:
             person.left()
             self._move(person)
+        if self.matrix[person.y][person.x - 1] == Cell.EMPTY:
             person.left()
-
-        elif person.x > self.left + 1:
-            person.left()
-
-        self._move(person)
+            self._move(person)
 
     def move_down(self, person):
-        if person.y < self.top - 1:
+        if self.matrix[person.y + 1][person.x] == Cell.EMPTY:
             person.down()
             self._move(person)
 
     def move_up(self, person):
-        if person.y > self.bottom + 1:
+        if self.matrix[person.y - 1][person.x] == Cell.EMPTY:
             person.up()
             self._move(person)
 
