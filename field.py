@@ -62,21 +62,6 @@ class Field:
     def _is_border(self, y, x):
         return self.matrix[y][x] in (Cell.BORDER, Cell.MARKED)
 
-    def _is_on_border(self, person):
-        return (
-            abs(person.y - person.py) == 1
-            and (
-                self._is_border(person.y, person.x - 1) or
-                self._is_border(person.y, person.x + 1)
-            )
-            or
-            abs(person.x - person.px) == 1
-            and (
-                self._is_border(person.y - 1, person.x) or
-                self._is_border(person.y + 1, person.x)
-            )
-        )
-
     def _is_border_reach(self, person):
         return (
             person.x - person.px == 1 and self._is_border(person.y, person.x + 1)
@@ -92,9 +77,6 @@ class Field:
         if person.kind == Person.HERO:
             self.matrix[person.y][person.x] = Cell.TRACK
             self._draw(person.y, person.x, Person.HERO_CHAR)
-
-            if self._is_on_border(person):
-                self._draw(person.py, person.px, ' ')
 
             if self._is_border_reach(person):
                 self.fill_one_figure()
