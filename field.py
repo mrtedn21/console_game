@@ -100,65 +100,70 @@ class Field:
 
         self.screen.refresh()
 
-    def move_right(self, person):
-        y, x = person.y, person.x
+    def _is_empty(self, y, x):
+        return self.matrix[y][x] == Cell.EMPTY
 
-        # checking if enemy kill hero
+    def _is_on_track(self, person, y, x):
         try:
-            if (person.kind == Person.ENEMY
-                    and (self.matrix[y][x + 1] == Cell.TRACK
-                         or self.matrix[y][x + 2] == Cell.TRACK)):
-                raise TypeError('You die!')
+            if person.kind != Person.ENEMY:
+                return False
+            if self.matrix[y][x] == Cell.TRACK:
+                return True
+            return False
         except IndexError:
             pass
 
-        if self.matrix[person.y][person.x + 1] == Cell.EMPTY:
+    def move_right(self, person):
+        y, x = person.y, person.x
+
+        if self._is_on_track(person, y, x + 1) \
+                or self._is_on_track(person, y, x + 2):
+            raise TypeError('You die!')
+
+        if self._is_empty(y, x + 1):
             person.right()
             self._move(person)
-        if self.matrix[person.y][person.x + 1] == Cell.EMPTY:
+        else:
+            return
+
+        if self._is_empty(y, x + 2):
             person.right()
             self._move(person)
 
     def move_left(self, person):
-        # checking if enemy kill hero
-        try:
-            if (person.kind == Person.ENEMY
-                    and (self.matrix[person.y][person.x - 1] == Cell.TRACK
-                         or self.matrix[person.y][person.x - 2] == Cell.TRACK)):
-                raise TypeError('You die!')
-        except IndexError:
-            pass
+        y, x = person.y, person.x
 
-        if self.matrix[person.y][person.x - 1] == Cell.EMPTY:
+        if self._is_on_track(person, y, x - 1) \
+                or self._is_on_track(person, y, x - 2):
+            raise TypeError('You die!')
+
+        if self._is_empty(y, x - 1):
             person.left()
             self._move(person)
-        if self.matrix[person.y][person.x - 1] == Cell.EMPTY:
+        else:
+            return
+
+        if self._is_empty(y, x - 2):
             person.left()
             self._move(person)
 
     def move_down(self, person):
-        # checking if enemy kill hero
-        try:
-            if (person.kind == Person.ENEMY
-                    and self.matrix[person.y + 1][person.x] == Cell.TRACK):
-                raise TypeError('You die!')
-        except IndexError:
-            pass
+        y, x = person.y, person.x
 
-        if self.matrix[person.y + 1][person.x] == Cell.EMPTY:
+        if self._is_on_track(person, y + 1, x):
+            raise TypeError('You die!')
+
+        if self._is_empty(y + 1, x):
             person.down()
             self._move(person)
 
     def move_up(self, person):
-        # checking if enemy kill hero
-        try:
-            if (person.kind == Person.ENEMY
-                    and self.matrix[person.y - 1][person.x] == Cell.TRACK):
-                raise TypeError('You die!')
-        except IndexError:
-            pass
+        y, x = person.y, person.x
 
-        if self.matrix[person.y - 1][person.x] == Cell.EMPTY:
+        if self._is_on_track(person, y - 1, x):
+            raise TypeError('You die!')
+
+        if self._is_empty(y - 1, x):
             person.up()
             self._move(person)
 
