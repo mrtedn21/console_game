@@ -91,10 +91,11 @@ class Field:
                 self.draw_little_figure()
                 self._draw(person.y, person.x, Person.HERO_CHAR)
 
-            self.screen.refresh()
-
         elif person.kind == Person.ENEMY:
             self._draw(person.y, person.x, Person.ENEMY_CHAR)
+            self._draw(person.py, person.px, ' ')
+
+        self.screen.refresh()
 
     def move_right(self, person):
         if self.matrix[person.y][person.x + 1] == Cell.EMPTY:
