@@ -1,3 +1,4 @@
+import random
 import sys
 import time
 
@@ -24,6 +25,10 @@ class Game:
             *self.field.get_start_position(Person.HERO),
             Person.HERO
         )
+        self.enemy = Person(
+            *self.field.get_start_position(Person.ENEMY),
+            Person.ENEMY
+        )
 
     def play(self):
         screen = ScreenAccess()
@@ -31,11 +36,31 @@ class Game:
 
         key = screen.getch()
         while key != ESCAPE_KEY:
-            time.sleep(1 / 60)
+            # Enemy logic
+            if not self.enemy.steps_count:
+                self.enemy.steps_count = random.randint(2, self.field.top)
+                self.enemy.direction = get_new_direction(
+                    self.enemy.direction
+                )
+
+            if self.enemy.direction == 0:
+                self.field.move_up(self.enemy)
+            if self.enemy.direction == 1:
+                self.field.move_down(self.enemy)
+            if self.enemy.direction == 2:
+                self.field.move_left(self.enemy)
+            if self.enemy.direction == 3:
+                self.field.move_right(self.enemy)
+
+            self.enemy.steps_count -= 1
+
+            # game logic
+            time.sleep(1 / 20)
             key = screen.getch()
             if key < 0:
                 continue
 
+            # Hero logic
             if key == UP_KEY:
                 self.field.move_up(self.hero)
             if key == DOWN_KEY:
@@ -44,3 +69,11 @@ class Game:
                 self.field.move_right(self.hero)
             if key == LEFT_KEY:
                 self.field.move_left(self.hero)
+
+
+def get_new_direction(old_direction):
+    new_dir = random.randint(0, 3)
+    if new_dir == old_direction:
+        return get_new_direction(new_dir)
+    else:
+        return new_dir

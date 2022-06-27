@@ -3,6 +3,7 @@ class Person:
     ENEMY = 1
 
     HERO_CHAR = 'X'
+    ENEMY_CHAR = '0'
 
     def __init__(self, y, x, kind):
         self.y = y
@@ -13,6 +14,8 @@ class Person:
         self.px = x
 
         self.kind = kind
+        self.steps_count = 0
+        self.direction = 0
 
     def left(self):
         self.px = self.x

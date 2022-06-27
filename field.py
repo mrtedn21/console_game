@@ -52,9 +52,16 @@ class Field:
         if kind == Person.HERO:
             new_y = self.bottom + 1
             new_x = self.left + 1
-
             self.matrix[new_y][new_x] = Cell.TRACK
-            return new_y, new_x
+
+        elif kind == Person.ENEMY:
+            new_y = int((self.top - self.bottom) / 2)
+            new_x = int((self.right - self.left) / 2)
+
+        else:
+            raise TypeError('Unknown person kind')
+
+        return new_y, new_x
 
     def _draw(self, *args, **kwargs):
         self.screen.addch(*args, **kwargs)
@@ -85,6 +92,9 @@ class Field:
                 self._draw(person.y, person.x, Person.HERO_CHAR)
 
             self.screen.refresh()
+
+        elif person.kind == Person.ENEMY:
+            self._draw(person.y, person.x, Person.ENEMY_CHAR)
 
     def move_right(self, person):
         if self.matrix[person.y][person.x + 1] == Cell.EMPTY:
