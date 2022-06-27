@@ -4,3 +4,7 @@ class UnknownPersonKindError(BaseException):
 
 class GameOverError(BaseException):
     pass
+
+
+class GameWinError(BaseException):
+    pass

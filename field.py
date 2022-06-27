@@ -3,6 +3,7 @@ from enum import Enum
 
 from exceptions import UnknownPersonKindError
 from exceptions import GameOverError
+from exceptions import GameWinError
 from person import Person
 from screen import ScreenAccess
 
@@ -21,11 +22,12 @@ class Cell(Enum):
     and all shape that drawed by track becomes
     marked, forever """
 
-    EMPTY = ' '
-    BORDER = 'B'
-    TRACK = 'X'
-    CONSIDER = 'c'
-    MARKED = 'm'
+    EMPTY = 0
+    BORDER = 1
+    TRACK = 2
+    CONSIDER = 3
+    MARKED = 4
+    ENEMY = 5
 
 
 class Field:
@@ -94,7 +96,10 @@ class Field:
 
         elif person.kind == Person.ENEMY:
             self._draw(person.y, person.x, Person.ENEMY_CHAR)
+            self.matrix[person.y][person.x] = Cell.ENEMY
+
             self._draw(person.py, person.px, ' ')
+            self.matrix[person.py][person.px] = Cell.EMPTY
 
         self.screen.refresh()
 
@@ -193,6 +198,13 @@ class Field:
             for x in range(self.right):
                 if self.matrix[y][x] == Cell.MARKED:
                     self._draw(y, x, Person.HERO_CHAR)
+
+                if self.matrix[y][x] == Cell.ENEMY:
+                    if self.matrix[y][x + 1] in (Cell.MARKED, Cell.BORDER) \
+                            and self.matrix[y][x - 1] in (Cell.MARKED, Cell.BORDER) \
+                            and self.matrix[y + 1][x] in (Cell.MARKED, Cell.BORDER) \
+                            and self.matrix[y - 1][x] in (Cell.MARKED, Cell.BORDER):
+                        raise GameWinError
 
         self.screen.refresh()
 
