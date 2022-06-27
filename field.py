@@ -1,6 +1,8 @@
 import random
 from enum import Enum
 
+from exceptions import UnknownPersonKindError
+from exceptions import GameOverError
 from person import Person
 from screen import ScreenAccess
 
@@ -59,7 +61,7 @@ class Field:
             new_x = int((self.right - self.left) / 2)
 
         else:
-            raise TypeError('Unknown person kind')
+            raise UnknownPersonKindError
 
         return new_y, new_x
 
@@ -114,7 +116,7 @@ class Field:
 
         if self._is_on_track(person, y, x + 1) \
                 or self._is_on_track(person, y, x + 2):
-            raise TypeError('You die!')
+            raise GameOverError
 
         if self._is_empty(y, x + 1):
             person.right()
@@ -131,7 +133,7 @@ class Field:
 
         if self._is_on_track(person, y, x - 1) \
                 or self._is_on_track(person, y, x - 2):
-            raise TypeError('You die!')
+            raise GameOverError
 
         if self._is_empty(y, x - 1):
             person.left()
@@ -147,7 +149,7 @@ class Field:
         y, x = person.y, person.x
 
         if self._is_on_track(person, y + 1, x):
-            raise TypeError('You die!')
+            raise GameOverError
 
         if self._is_empty(y + 1, x):
             person.down()
@@ -157,7 +159,7 @@ class Field:
         y, x = person.y, person.x
 
         if self._is_on_track(person, y - 1, x):
-            raise TypeError('You die!')
+            raise GameOverError
 
         if self._is_empty(y - 1, x):
             person.up()
