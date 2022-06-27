@@ -71,20 +71,23 @@ class Field:
 
     def _is_border_reach(self, person):
         return (
-            person.x - person.px == 1 and self._is_border(person.y, person.x + 1)
-            or
-            person.px - person.x == 1 and self._is_border(person.y, person.x - 1)
-            or
-            person.y - person.py == 1 and self._is_border(person.y + 1, person.x)
-            or
-            person.py - person.y == 1 and self._is_border(person.y - 1, person.x)
+                person.x - person.px == 1 and self._is_border(person.y,
+                                                              person.x + 1)
+                or
+                person.px - person.x == 1 and self._is_border(person.y,
+                                                              person.x - 1)
+                or
+                person.y - person.py == 1 and self._is_border(person.y + 1,
+                                                              person.x)
+                or
+                person.py - person.y == 1 and self._is_border(person.y - 1,
+                                                              person.x)
         )
 
     def _move(self, person):
         if person.kind == Person.HERO:
             self.matrix[person.y][person.x] = Cell.TRACK
             self._draw(person.y, person.x, Person.HERO_CHAR)
-
             if self._is_border_reach(person):
                 self.fill_one_figure()
                 self.select_little_figure()
@@ -98,6 +101,17 @@ class Field:
         self.screen.refresh()
 
     def move_right(self, person):
+        y, x = person.y, person.x
+
+        # checking if enemy kill hero
+        try:
+            if (person.kind == Person.ENEMY
+                    and (self.matrix[y][x + 1] == Cell.TRACK
+                         or self.matrix[y][x + 2] == Cell.TRACK)):
+                raise TypeError('You die!')
+        except IndexError:
+            pass
+
         if self.matrix[person.y][person.x + 1] == Cell.EMPTY:
             person.right()
             self._move(person)
@@ -106,6 +120,15 @@ class Field:
             self._move(person)
 
     def move_left(self, person):
+        # checking if enemy kill hero
+        try:
+            if (person.kind == Person.ENEMY
+                    and (self.matrix[person.y][person.x - 1] == Cell.TRACK
+                         or self.matrix[person.y][person.x - 2] == Cell.TRACK)):
+                raise TypeError('You die!')
+        except IndexError:
+            pass
+
         if self.matrix[person.y][person.x - 1] == Cell.EMPTY:
             person.left()
             self._move(person)
@@ -114,11 +137,27 @@ class Field:
             self._move(person)
 
     def move_down(self, person):
+        # checking if enemy kill hero
+        try:
+            if (person.kind == Person.ENEMY
+                    and self.matrix[person.y + 1][person.x] == Cell.TRACK):
+                raise TypeError('You die!')
+        except IndexError:
+            pass
+
         if self.matrix[person.y + 1][person.x] == Cell.EMPTY:
             person.down()
             self._move(person)
 
     def move_up(self, person):
+        # checking if enemy kill hero
+        try:
+            if (person.kind == Person.ENEMY
+                    and self.matrix[person.y - 1][person.x] == Cell.TRACK):
+                raise TypeError('You die!')
+        except IndexError:
+            pass
+
         if self.matrix[person.y - 1][person.x] == Cell.EMPTY:
             person.up()
             self._move(person)
