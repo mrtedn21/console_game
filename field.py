@@ -71,17 +71,13 @@ class Field:
 
     def _is_border_reach(self, person):
         return (
-                person.x - person.px == 1 and self._is_border(person.y,
-                                                              person.x + 1)
-                or
-                person.px - person.x == 1 and self._is_border(person.y,
-                                                              person.x - 1)
-                or
-                person.y - person.py == 1 and self._is_border(person.y + 1,
-                                                              person.x)
-                or
-                person.py - person.y == 1 and self._is_border(person.y - 1,
-                                                              person.x)
+            person.x - person.px == 1 and self._is_border(person.y, person.x + 1)
+            or
+            person.px - person.x == 1 and self._is_border(person.y, person.x - 1)
+            or
+            person.y - person.py == 1 and self._is_border(person.y + 1, person.x)
+            or
+            person.py - person.y == 1 and self._is_border(person.y - 1, person.x)
         )
 
     def _move(self, person):
