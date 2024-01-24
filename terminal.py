@@ -1,5 +1,7 @@
 import curses
+
 from gameplay_utils import Cell
+
 
 cell_type_to_terminal_char = {
     Cell.EMPTY: ' ',
@@ -43,5 +45,3 @@ class Terminal:
                 pass
 
         self._screen_obj.refresh()
-
-

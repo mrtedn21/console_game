@@ -1,6 +1,7 @@
-from enum import Enum
 import random
-from game_field import GameField, Cell
+from enum import Enum
+
+from game_field import Cell, GameField
 
 
 class MotionDirection(Enum):

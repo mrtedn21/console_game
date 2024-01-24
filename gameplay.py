@@ -1,7 +1,19 @@
-from gameplay_exceptions import GameOverError
 from typing import Optional
-from gameplay_utils import MotionDirection, _get_new_coordinates_by_motion_direction, _can_person_go, _is_person_on_track, _is_motion_horizontal, _is_border_reached, LittleFigureDetector, _get_new_steps_count, _get_new_movement_direction, return_changes
-from game_field import GameField, Cell
+
+from game_field import Cell, GameField
+from gameplay_exceptions import GameOverError
+from gameplay_utils import (
+    LittleFigureDetector,
+    MotionDirection,
+    _can_person_go,
+    _get_new_coordinates_by_motion_direction,
+    _get_new_movement_direction,
+    _get_new_steps_count,
+    _is_border_reached,
+    _is_motion_horizontal,
+    _is_person_on_track,
+    return_changes
+)
 
 
 class GamePlay:

@@ -1,12 +1,12 @@
+import sys
+import time
 from collections import defaultdict
 
-from gameplay_exceptions import GameOverError
-import time
-import sys
-from gameplay_exceptions import GameWinError
-from terminal import Terminal
 from gameplay import GamePlay
+from gameplay_exceptions import GameOverError, GameWinError
 from gameplay_utils import MotionDirection
+from terminal import Terminal
+
 
 ESCAPE_KEY = 27
 UP_KEY = 259
