@@ -43,11 +43,10 @@ def main():
         pressed_key = terminal.get_pressed_key()
         while pressed_key != ESCAPE_KEY:
             motion_direction = pressed_key_to_motion_direction[pressed_key]
-            #motion_direction = MotionDirection.RIGHT
             changes = game_play.make_progress(motion_direction)
             terminal.print_changes(changes)
-            pressed_key = terminal.get_pressed_key()
             time.sleep(1 / 20)
+            pressed_key = terminal.get_pressed_key()
 
     except KeyboardInterrupt:
         terminal.destroy('Exit from game')

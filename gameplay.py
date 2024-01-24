@@ -1,6 +1,7 @@
 from gameplay_exceptions import GameOverError
 from typing import Optional
-from gameplay_utils import GameField, Cell, MotionDirection, _get_new_coordinates_by_motion_direction, _can_person_go, _is_person_on_track, _is_motion_horizontal, _is_border_reached, LittleFigureDetector, _get_new_steps_count, _get_new_movement_direction, return_changes
+from gameplay_utils import MotionDirection, _get_new_coordinates_by_motion_direction, _can_person_go, _is_person_on_track, _is_motion_horizontal, _is_border_reached, LittleFigureDetector, _get_new_steps_count, _get_new_movement_direction, return_changes
+from game_field import GameField, Cell
 
 
 class GamePlay:
@@ -64,12 +65,9 @@ class GamePlay:
         )
 
         if _is_border_reached(self._game_field, new_hero_y, new_hero_x):
-            # ИЗБАВИТЬСЯ ОТ ТОПОВ И ЛЕФТОВ ТУТ, ОНИ ИЗЛИШНИ!
             detector = LittleFigureDetector(
-                top=self._top,
-                bottom=self._bottom,
-                left=self._left,
-                right=self._right,
+                top=self._top, bottom=self._bottom,
+                left=self._left, right=self._right,
                 game_field=self._game_field,
             )
             detector.detect()
