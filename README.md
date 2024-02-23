@@ -9,4 +9,5 @@ To install this game all you need is git and python. Clone this
 repo and run python main.py command and play. Good luck in game!
 
 Here example of playing
+
 ![example](https://github.com/mrtedn21/console_game/assets/23434594/bde356b1-ccdc-440c-8954-15dc81a8fa31)
