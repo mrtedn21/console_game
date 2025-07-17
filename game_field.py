@@ -1,55 +1,46 @@
-from enum import Enum
+from functools import cached_property
+from constants import Cell, PositionChange
 from typing import Optional
-
-
-class Cell(Enum):
-    """ This class presents cell on game field.
-    Empty cell means usual cell. In start of
-    game all cells are empty. Track cell means
-    temp marked. Cell become track when game
-    person move, behind him remains track of
-    marked cells. But if enemy will cross over
-    the track, game person lose and die, and
-    track cells became again empty. Last type
-    is marked, cell becomes marked when person
-    successfully moves from one border to anoter
-    and all shape that drawed by track becomes
-    marked, forever """
-
-    EMPTY = 0
-    BORDER = 1
-    TRACK = 2
-    CONSIDER = 3
-    MARKED = 4
-    ENEMY = 5
 
 
 class GameField:
     def __init__(self, height: int, width: int):
-        self._matrix: list[list[Cell]] = []
-        self._changes: list[tuple] = []
-
-        for i in range(height):
-            self._matrix.append([])
-
-            for j in range(width):
-                self._matrix[i].append(Cell.EMPTY)
+        self._position_changes: list[PositionChange] = []
+        self._matrix: list[list[Cell]] = [
+            [Cell.EMPTY for _ in range(width)] for _ in range(height)
+        ]
 
     def clear_changes(self):
-        self._changes = []
+        self._position_changes = []
 
     def get_changes(self):
-        return self._changes
+        return self._position_changes
 
-    def set(self, y: int, x: int, value: Cell):
+    def update_cell(self, position_change: PositionChange):
         try:
-            self._matrix[y][x] = value
-            self._changes.append((y, x, value))
+            self._matrix[position_change.new_y][position_change.new_x] = (
+                position_change.value
+            )
+            self._position_changes.append(position_change)
         except IndexError:
             pass
 
+    # TODO rewrite get to square brackets
     def get(self, y: int, x: int) -> Optional[Cell]:
         try:
             return self._matrix[y][x]
         except IndexError:
             return None
+
+    @cached_property
+    def width(self) -> int:
+        return len(self._matrix[0])
+
+    @cached_property
+    def height(self) -> int:
+        return len(self._matrix)
+
+    def __iter__(self):
+        for i in self._matrix:
+            for j in i:
+                yield j

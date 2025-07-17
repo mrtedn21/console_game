@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from gameplay import GamePlay
 from gameplay_exceptions import GameOverError, GameWinError
-from gameplay_utils import MotionDirection
+from constants import MotionDirection
 from terminal import Terminal
 
 
@@ -49,14 +49,14 @@ def main():
             pressed_key = terminal.get_pressed_key()
 
     except KeyboardInterrupt:
-        terminal.destroy('Exit from game')
+        terminal.destroy("Exit from game")
     except GameOverError:
-        terminal.destroy('You lose, game over')
+        terminal.destroy("You lose, game over")
     except GameWinError:
-        terminal.destroy('You win! Congratulations!')
+        terminal.destroy("You win! Congratulations!")
     finally:
         terminal.destroy()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

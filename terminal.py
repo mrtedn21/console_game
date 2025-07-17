@@ -1,14 +1,15 @@
 import curses
+from constants import PositionChange
 
 from gameplay_utils import Cell
 
 
 cell_type_to_terminal_char = {
-    Cell.EMPTY: ' ',
-    Cell.TRACK: 'X',
-    Cell.CONSIDER: ' ',
-    Cell.MARKED: 'X',
-    Cell.ENEMY: 'O',
+    Cell.EMPTY: " ",
+    Cell.TRACK: "X",
+    Cell.CONSIDER: " ",
+    Cell.MARKED: "X",
+    Cell.ENEMY: "O",
 }
 
 
@@ -28,7 +29,7 @@ class Terminal:
     def get_pressed_key(self):
         return self._screen_obj.getch()
 
-    def destroy(self, print_text_after_destroy: str = ''):
+    def destroy(self, print_text_after_destroy: str = ""):
         curses.nocbreak()
         self._screen_obj.keypad(False)
         curses.echo()
@@ -37,13 +38,13 @@ class Terminal:
         if print_text_after_destroy:
             print(print_text_after_destroy)
 
-    def print_changes(self, changes: list):
-        for y, x, cell_type in changes:
-            if cell_type == Cell.BORDER:
-                self._print_border(y, x)
+    def print_changes(self, changes: list[PositionChange]):
+        for change in changes:
+            if change.value == Cell.BORDER:
+                self._print_border(change.new_y, change.new_x)
             else:
-                char = cell_type_to_terminal_char[cell_type]
-                self._print(y, x, char)
+                char = cell_type_to_terminal_char[change.value]
+                self._print(change.new_y, change.new_x, char)
 
         self._screen_obj.refresh()
 
@@ -55,19 +56,19 @@ class Terminal:
 
     def _print_border(self, y: int, x: int):
         if y == self.max_y - 1 and x == self.max_x - 1:
-            self._print(y, x, '┘')
+            self._print(y, x, "┘")
 
         elif y == 0 and x == 0:
-            self._print(y, x, '┌')
+            self._print(y, x, "┌")
 
         elif y == self.max_y - 1 and x == 0:
-            self._print(y, x, '└')
+            self._print(y, x, "└")
 
         elif y == 0 and x == self.max_x - 1:
-            self._print(y, x, '┐')
+            self._print(y, x, "┐")
 
         elif y == 0 or y == self.max_y - 1:
-            self._print(y, x, '─')
+            self._print(y, x, "─")
 
         elif x == 0 or x == self.max_x - 1:
-            self._print(y, x, '│')
+            self._print(y, x, "│")

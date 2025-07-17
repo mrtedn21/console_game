@@ -1,73 +1,8 @@
 import random
-from enum import Enum
+from constants import PositionChange
+from constants import Cell
 
-from game_field import Cell, GameField
-
-
-class MotionDirection(Enum):
-    UP = 1
-    DOWN = 2
-    RIGHT = 3
-    LEFT = 4
-    DO_NOTHING = 5
-
-
-def _is_motion_horizontal(motion_direction: MotionDirection) -> bool:
-    return motion_direction in (
-        MotionDirection.RIGHT, MotionDirection.LEFT,
-    )
-
-
-def _can_person_go(
-    game_field: GameField,
-    new_y: int,
-    new_x: int,
-) -> bool:
-    if game_field.get(new_y, new_x) == Cell.EMPTY:
-        return True
-    return False
-
-
-def _is_person_on_track(game_field: GameField, new_y: int, new_x: int) -> bool:
-    try:
-        if game_field.get(new_y, new_x) == Cell.TRACK:
-            return True
-        return False
-    except IndexError:
-        pass
-
-
-def _is_border_reached(game_field: GameField, new_y: int, new_x: int) -> bool:
-    return game_field.get(new_y, new_x) in (Cell.BORDER, Cell.MARKED)
-
-
-def _is_on_track(game_field: GameField, new_y: int, new_x: int) -> bool:
-    return game_field.get(new_y, new_x) == Cell.TRACK
-
-
-def _get_new_coordinates_by_motion_direction(
-    old_y: int, old_x: int, motion_direction: MotionDirection,
-) -> tuple[int, int]:
-    decision_mapping = {
-        MotionDirection.UP: lambda y, x: (y - 1, x),
-        MotionDirection.DOWN: lambda y, x: (y + 1, x),
-        MotionDirection.RIGHT: lambda y, x: (y, x + 1),
-        MotionDirection.LEFT: lambda y, x: (y, x - 1),
-    }
-
-    return decision_mapping[motion_direction](old_y, old_x)
-
-
-def _get_new_steps_count(top: int) -> int:
-    return random.randint(2, top)
-
-
-def _get_new_movement_direction(old_direction):
-    new_dir = random.randint(1, 4)
-    if new_dir == old_direction:
-        return MotionDirection(_get_new_movement_direction(new_dir))
-    else:
-        return MotionDirection(new_dir)
+from game_field import GameField
 
 
 def return_changes(func):
@@ -75,26 +10,16 @@ def return_changes(func):
         self._game_field.clear_changes()
         func(self, *args, **kwargs)
         return self._game_field.get_changes()
+
     return foo
 
 
 class LittleFigureDetector:
-    """ When hero reach border, whole game field became
+    """When hero reach border, whole game field became
     separated by two figures, the class needs to detect which
     of these figures is less, and then the class marked it"""
 
-    def __init__(
-        self,
-        top: int,
-        bottom: int,
-        left: int,
-        right: int,
-        game_field: GameField,
-    ):
-        self._top = top
-        self._bottom = bottom
-        self._left = left
-        self._right = right
+    def __init__(self, game_field: GameField):
         self._game_field = game_field
 
     def detect(self):
@@ -104,25 +29,32 @@ class LittleFigureDetector:
     def _select_little_figure(self):
         empty_count = 0
         considered_count = 0
-        for i in self._game_field._matrix:
-            for j in i:
-                if j == Cell.EMPTY:
-                    empty_count += 1
-                if j == Cell.CONSIDER:
-                    considered_count += 1
+        for i in self._game_field:
+            if i == Cell.EMPTY:
+                empty_count += 1
+            if i == Cell.CONSIDER:
+                considered_count += 1
 
-        for y in range(self._top):
-            for x in range(self._right):
+        for y in range(self._game_field.height):
+            for x in range(self._game_field.width):
                 if empty_count < considered_count:
                     if self._game_field.get(y, x) == Cell.EMPTY:
-                        self._game_field.set(y, x, Cell.MARKED)
+                        self._game_field.update_cell(
+                            PositionChange(new_y=y, new_x=x, value=Cell.MARKED)
+                        )
                     if self._game_field.get(y, x) == Cell.CONSIDER:
-                        self._game_field.set(y, x, Cell.EMPTY)
+                        self._game_field.update_cell(
+                            PositionChange(new_y=y, new_x=x, value=Cell.EMPTY)
+                        )
                 else:
                     if self._game_field.get(y, x) == Cell.CONSIDER:
-                        self._game_field.set(y, x, Cell.MARKED)
+                        self._game_field.update_cell(
+                            PositionChange(new_y=y, new_x=x, value=Cell.MARKED)
+                        )
                 if self._game_field.get(y, x) == Cell.TRACK:
-                    self._game_field.set(y, x, Cell.MARKED)
+                    self._game_field.update_cell(
+                        PositionChange(new_y=y, new_x=x, value=Cell.MARKED)
+                    )
 
     def _fill_one_figure(self, y=None, x=None):
         if y is None or x is None:
@@ -130,27 +62,35 @@ class LittleFigureDetector:
 
         try:
             if self._game_field.get(y + 1, x) == Cell.EMPTY:
-                self._game_field.set(y + 1, x, Cell.CONSIDER)
+                self._game_field.update_cell(
+                    PositionChange(new_y=y + 1, new_x=x, value=Cell.CONSIDER)
+                )
                 self._fill_one_figure(y + 1, x)
 
             if self._game_field.get(y, x + 1) == Cell.EMPTY:
-                self._game_field.set(y, x + 1, Cell.CONSIDER)
+                self._game_field.update_cell(
+                    PositionChange(new_y=y, new_x=x + 1, value=Cell.CONSIDER)
+                )
                 self._fill_one_figure(y, x + 1)
 
             if self._game_field.get(y - 1, x) == Cell.EMPTY:
-                self._game_field.set(y - 1, x, Cell.CONSIDER)
+                self._game_field.update_cell(
+                    PositionChange(new_y=y - 1, new_x=x, value=Cell.CONSIDER)
+                )
                 self._fill_one_figure(y - 1, x)
 
             if self._game_field.get(y, x - 1) == Cell.EMPTY:
-                self._game_field.set(y, x - 1, Cell.CONSIDER)
+                self._game_field.update_cell(
+                    PositionChange(new_y=y, new_x=x - 1, value=Cell.CONSIDER)
+                )
                 self._fill_one_figure(y, x - 1)
         except IndexError:
             pass
 
     def _get_random_empty_coordinates(self):
         random.seed()
-        y = random.randint(3, self._top - 2)
-        x = random.randint(2, self._right - 2)
+        y = random.randint(3, self._game_field.height - 2)
+        x = random.randint(2, self._game_field.width - 2)
         if self._game_field.get(y, x) == Cell.EMPTY:
             return y, x
         return self._get_random_empty_coordinates()
