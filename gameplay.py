@@ -88,10 +88,7 @@ class GamePlay:
 
     def _move_enemy(self):
         if self._enemy_steps_count < 1:
-            self._enemy_steps_count = self._get_new_steps_count(self._top)
-            self._enemy_motion_direction = self._get_new_movement_direction(
-                self._enemy_motion_direction,
-            )
+            self._set_new_enemy_direction()
 
         new_enemy_y, new_enemy_x = self._get_new_coordinates_by_motion_direction(
             self._enemy_y,
@@ -103,6 +100,7 @@ class GamePlay:
             raise GameOverError
 
         if not self._can_person_go(new_enemy_y, new_enemy_x):
+            self._set_new_enemy_direction()
             return
 
         self._game_field.update_cell(
@@ -115,6 +113,12 @@ class GamePlay:
         self._enemy_y = new_enemy_y
         self._enemy_x = new_enemy_x
         self._enemy_steps_count -= 1
+
+    def _set_new_enemy_direction(self):
+        self._enemy_steps_count = self._get_new_steps_count(self._top)
+        self._enemy_motion_direction = self._get_new_movement_direction(
+            self._enemy_motion_direction,
+        )
 
     def _can_person_go(
         self,
