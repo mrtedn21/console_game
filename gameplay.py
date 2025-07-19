@@ -107,7 +107,7 @@ class GamePlay:
             PositionChange(new_y=self._enemy_y, new_x=self._enemy_x, value=Cell.EMPTY)
         )
         self._game_field.update_cell(
-            PositionChange(new_y=self._enemy_y, new_x=self._enemy_x, value=Cell.ENEMY)
+            PositionChange(new_y=new_enemy_y, new_x=new_enemy_x, value=Cell.ENEMY)
         )
 
         self._enemy_y = new_enemy_y
