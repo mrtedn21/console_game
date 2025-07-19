@@ -3,7 +3,7 @@ import random
 
 from game_field import GameField
 from gameplay_utils import Cell
-from gameplay_exceptions import GameOverError
+from gameplay_exceptions import GameOverError, GameWinError
 from gameplay_utils import LittleFigureDetector, return_changes
 from constants import MotionDirection, PositionChange
 
@@ -76,6 +76,8 @@ class GamePlay:
 
         if self._is_border_reached(new_hero_y, new_hero_x):
             LittleFigureDetector(self._game_field).detect()
+            if self._is_enemy_lose():
+                raise GameWinError
 
         if not self._can_person_go(new_hero_y, new_hero_x):
             return
@@ -142,6 +144,14 @@ class GamePlay:
 
     def _is_on_track(self, new_y: int, new_x: int) -> bool:
         return self._game_field.get(new_y, new_x) == Cell.TRACK
+
+    def _is_enemy_lose(self):
+        return all((
+            self._game_field.get(self._enemy_y + 1, self._enemy_x) in (Cell.BORDER, Cell.MARKED),
+            self._game_field.get(self._enemy_y - 1, self._enemy_x) in (Cell.BORDER, Cell.MARKED),
+            self._game_field.get(self._enemy_y, self._enemy_x - 1) in (Cell.BORDER, Cell.MARKED),
+            self._game_field.get(self._enemy_y, self._enemy_x + 1) in (Cell.BORDER, Cell.MARKED),
+        ))
 
     def _get_new_coordinates_by_motion_direction(
         self,
