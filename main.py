@@ -29,7 +29,7 @@ pressed_key_to_motion_direction = defaultdict(
 def main():
     terminal = Terminal()
     max_y, max_x = terminal.get_max_y_and_x()
-    sys.setrecursionlimit(max_y * max_x)
+    sys.setrecursionlimit(max_y * max_x * 2)
 
     game_play = GamePlay(max_y, max_x)
 

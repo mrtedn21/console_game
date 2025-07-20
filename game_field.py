@@ -25,7 +25,10 @@ class GameField:
         except IndexError:
             pass
 
-    # TODO rewrite get to square brackets
+    def update_cells(self, *position_changes: PositionChange):
+        for position_change in position_changes:
+            self.update_cell(position_change)
+
     def get(self, y: int, x: int) -> Optional[Cell]:
         try:
             return self._matrix[y][x]

@@ -23,10 +23,10 @@ class LittleFigureDetector:
         self._game_field = game_field
 
     def detect(self):
-        self._fill_one_figure()
-        self._select_little_figure()
+        self._mark_random_figure_as_considered()
+        self._final_mark_little_figure()
 
-    def _select_little_figure(self):
+    def _final_mark_little_figure(self):
         empty_count = 0
         considered_count = 0
         for i in self._game_field:
@@ -56,41 +56,28 @@ class LittleFigureDetector:
                         PositionChange(new_y=y, new_x=x, value=Cell.MARKED)
                     )
 
-    def _fill_one_figure(self, y=None, x=None):
+    def _mark_cell_considered_if_it_is_empty(self, y: int, x: int):
+        if self._game_field.get(y, x) == Cell.EMPTY:
+            self._game_field.update_cell(
+                PositionChange(new_y=y, new_x=x, value=Cell.CONSIDER)
+            )
+            self._mark_random_figure_as_considered(y, x)
+
+    def _mark_random_figure_as_considered(self, y=None, x=None):
         if y is None or x is None:
             y, x = self._get_random_empty_coordinates()
 
-        try:
-            if self._game_field.get(y + 1, x) == Cell.EMPTY:
-                self._game_field.update_cell(
-                    PositionChange(new_y=y + 1, new_x=x, value=Cell.CONSIDER)
-                )
-                self._fill_one_figure(y + 1, x)
-
-            if self._game_field.get(y, x + 1) == Cell.EMPTY:
-                self._game_field.update_cell(
-                    PositionChange(new_y=y, new_x=x + 1, value=Cell.CONSIDER)
-                )
-                self._fill_one_figure(y, x + 1)
-
-            if self._game_field.get(y - 1, x) == Cell.EMPTY:
-                self._game_field.update_cell(
-                    PositionChange(new_y=y - 1, new_x=x, value=Cell.CONSIDER)
-                )
-                self._fill_one_figure(y - 1, x)
-
-            if self._game_field.get(y, x - 1) == Cell.EMPTY:
-                self._game_field.update_cell(
-                    PositionChange(new_y=y, new_x=x - 1, value=Cell.CONSIDER)
-                )
-                self._fill_one_figure(y, x - 1)
-        except IndexError:
-            pass
+        self._mark_cell_considered_if_it_is_empty(y + 1, x)
+        self._mark_cell_considered_if_it_is_empty(y, x + 1)
+        self._mark_cell_considered_if_it_is_empty(y - 1, x)
+        self._mark_cell_considered_if_it_is_empty(y, x - 1)
 
     def _get_random_empty_coordinates(self):
         random.seed()
         y = random.randint(3, self._game_field.height - 2)
         x = random.randint(2, self._game_field.width - 2)
+
         if self._game_field.get(y, x) == Cell.EMPTY:
             return y, x
+        
         return self._get_random_empty_coordinates()
