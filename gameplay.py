@@ -59,11 +59,7 @@ class GamePlay:
         )
 
     @return_changes
-    def make_progress(self, hero_motion_direction: MotionDirection):
-        self._move_hero(hero_motion_direction)
-        self._move_enemy()
-
-    def _move_hero(self, motion_direction: MotionDirection):
+    def move_hero(self, motion_direction: MotionDirection):
         if motion_direction == motion_direction.DO_NOTHING:
             return
 
@@ -84,7 +80,8 @@ class GamePlay:
         )
         self._hero.y, self._hero.x = new_hero_y, new_hero_x
 
-    def _move_enemy(self):
+    @return_changes
+    def move_enemy(self):
         if self._enemy.steps_count < 1:
             self._set_new_enemy_direction()
 

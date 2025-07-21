@@ -1,4 +1,5 @@
 import sys
+import asyncio
 import time
 from collections import defaultdict
 
@@ -26,7 +27,26 @@ pressed_key_to_motion_direction = defaultdict(
 )
 
 
-def main():
+async def move_hero(terminal, game_play):
+    pressed_key = terminal.get_pressed_key()
+    while pressed_key != ESCAPE_KEY:
+        motion_direction = pressed_key_to_motion_direction[pressed_key]
+
+        changes = game_play.move_hero(motion_direction)
+        terminal.print_changes(changes)
+        await asyncio.sleep(1 / 100)
+
+        pressed_key = terminal.get_pressed_key()
+
+
+async def move_enemy(terminal, game_play):
+    while True:
+        changes = game_play.move_enemy()
+        terminal.print_changes(changes)
+        await asyncio.sleep(1 / 20)
+
+
+async def main():
     terminal = Terminal()
     max_y, max_x = terminal.get_max_y_and_x()
     sys.setrecursionlimit(max_y * max_x * 2)
@@ -40,13 +60,9 @@ def main():
     terminal.print_changes(changes)
 
     try:
-        pressed_key = terminal.get_pressed_key()
-        while pressed_key != ESCAPE_KEY:
-            motion_direction = pressed_key_to_motion_direction[pressed_key]
-            changes = game_play.make_progress(motion_direction)
-            terminal.print_changes(changes)
-            time.sleep(1 / 20)
-            pressed_key = terminal.get_pressed_key()
+        async with asyncio.TaskGroup() as tg:
+            tg.create_task(move_enemy(terminal, game_play))
+            tg.create_task(move_hero(terminal, game_play))
 
     except KeyboardInterrupt:
         terminal.destroy("Exit from game")
@@ -59,4 +75,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
