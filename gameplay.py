@@ -75,9 +75,11 @@ class GamePlay:
         if not self._can_person_go(new_hero_y, new_hero_x):
             return
 
-        self._game_field.update_cell(
-            PositionChange(new_y=new_hero_y, new_x=new_hero_x, value=Cell.TRACK)
-        )
+        self._game_field.update_cell(PositionChange(
+            new_y=new_hero_y, new_x=new_hero_x,
+            old_y=self._hero.y, old_x=self._hero.x,
+            value = Cell.TRACK,
+        ))
         self._hero.y, self._hero.x = new_hero_y, new_hero_x
 
     @return_changes
