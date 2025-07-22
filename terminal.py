@@ -19,6 +19,7 @@ class Terminal:
         self._screen_obj.nodelay(True)
         curses.noecho()
         curses.cbreak()
+        curses.curs_set(0)
         self._screen_obj.keypad(True)
 
         self.max_y, self.max_x = self.get_max_y_and_x()
